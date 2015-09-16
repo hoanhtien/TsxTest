@@ -1,0 +1,10 @@
+{
+    "compilerOptions": {
+        "jsx": "react",
+        "module": "commonjs",
+        "removeComments": true,
+        "preserveConstEnums": true,
+        "out": "../built/out.js",
+        "sourceMap": true
+    }
+}
