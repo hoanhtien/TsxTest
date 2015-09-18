@@ -1,6 +1,6 @@
 /// <reference path="../typing/react.d.ts" />
 
-class MyCommentProperies implements React.Props<any> {
+class MyCommentProperies {
     public author: string;
     public children: React.ReactNode;
 }
@@ -16,7 +16,7 @@ class MyComment extends React.Component<MyCommentProperies, any> {
     }
 }
 
-class CommentListProperties implements React.Props<any> {
+class CommentListProperties {
     public data: { author: string; text: string }[];
 }
 
@@ -35,55 +35,64 @@ class CommentList extends React.Component<CommentListProperties, any> {
     }
 }
 
-/*class CommentForm extends React.Component<any, any> {
-    handleSubmit(e: Event) {
-        e.preventDefault();
-        var author = React.findDOMNode(this.refs['author']).nodeValue.trim();
-        var text = React.findDOMNode(this.refs['text']).nodeValue.trim();
-        console.log('author: ' + author);
-        console.log('text: ' + text);
+interface CommentFormProperties {
+    onCommentSubmit(comment: { author: string, content: string }): void;
+}
+
+class CommentForm extends React.Component<CommentFormProperties, any> {
+    refs: {
+        author: any,
+        text: any;
+        [key: string]: React.Component<any, any>;
     }
     render() {
-        <form className="commentForm" onSubmit={this.handleSubmit}>
-            <input type="text" placeholder="Your name" ref="author" />
-            <input type="text" placeholder="Say something..." ref="text" />
-            <input type="submit" value="Post" />
-        </form>
+        function handleSubmit(e: Event) {
+            e.preventDefault();
+            var author = React.findDOMNode<HTMLInputElement>(this.refs.author).value.trim();
+            var text = React.findDOMNode<HTMLInputElement>(this.refs.text).value.trim();
+            console.log(author, text);
+        }
+        return (
+            <form className="commentForm" onSubmit={handleSubmit.bind(this) } >
+                <input type="text" placeholder="Your name" ref="author" />
+                <input type="text" placeholder="Say something..." ref="text" />
+                <input type="submit" value="Post" />
+                </form>
+        );
     }
-}*/
+}
 
 class CommentBoxState {
     public data: { author: string; text: string }[];
 }
 
-function randomString() {
-    return Math.random().toString(36).substring(7);
-}
+let comments = [
+    { author: "Pete Hunt", text: "This is one comment" },
+    { author: "Jordan Walke", text: "This is *another* comment" },
+    { author: "Mike McCain", text: "This is also *another* comment" }
+];
 
-let spec: React.ComponentSpec<any, CommentBoxState> = {
+class CommentBox extends React.Component<any, CommentBoxState> {
     getInitialState() {
         return { data: [] };
-    },
+    }
     componentDidMount() {
-        let tmp = [
-            { author: " Pete Hunt", text: "This is one comment" },
-            { author: "Jordan Walke", text: "This is *another* comment" }
-            { author: "Mike McCain", text: "This is also *another* comment" }
-        ];
-        let self = this;
-        self.setState({ data: tmp });
-    },
+        this.setState({ data: comments });
+    }
     render() {
+        function handleCommentSubmit(comment) {
+            comments.push(comment);
+            this.setState({ data: comments });
+        }
         return (
             <div className="commentBox">
                 <h1>Comments</h1>
                 <CommentList data={this.state.data}/>
+                <CommentForm onCommentSubmit={handleCommentSubmit.bind(this)}/>
             </div>
         );
     }
 };
-
-let CommentBox = React.createClass(spec);
 
 React.render(
     <CommentBox/>,

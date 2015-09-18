@@ -37,30 +37,51 @@ var CommentList = (function (_super) {
     };
     return CommentList;
 })(React.Component);
+var CommentForm = (function (_super) {
+    __extends(CommentForm, _super);
+    function CommentForm() {
+        _super.apply(this, arguments);
+    }
+    CommentForm.prototype.render = function () {
+        function handleSubmit(e) {
+            e.preventDefault();
+            var author = React.findDOMNode(this.refs.author).value.trim();
+            var text = React.findDOMNode(this.refs.text).value.trim();
+            console.log(author, text);
+        }
+        return (React.createElement("form", {"className": "commentForm", "onSubmit": handleSubmit.bind(this)}, React.createElement("input", {"type": "text", "placeholder": "Your name", "ref": "author"}), React.createElement("input", {"type": "text", "placeholder": "Say something...", "ref": "text"}), React.createElement("input", {"type": "submit", "value": "Post"})));
+    };
+    return CommentForm;
+})(React.Component);
 var CommentBoxState = (function () {
     function CommentBoxState() {
     }
     return CommentBoxState;
 })();
-function randomString() {
-    return Math.random().toString(36).substring(7);
-}
-var spec = {
-    getInitialState: function () {
-        return { data: [] };
-    },
-    componentDidMount: function () {
-        var tmp = [
-            { author: " Pete Hunt", text: "This is one comment" },
-            { author: "Jordan Walke", text: "This is *another* comment" },
-            { author: "Mike McCain", text: "This is also *another* comment" }
-        ];
-        var self = this;
-        self.setState({ data: tmp });
-    },
-    render: function () {
-        return (React.createElement("div", {"className": "commentBox"}, React.createElement("h1", null, "Comments"), React.createElement(CommentList, {"data": this.state.data})));
+var comments = [
+    { author: "Pete Hunt", text: "This is one comment" },
+    { author: "Jordan Walke", text: "This is *another* comment" },
+    { author: "Mike McCain", text: "This is also *another* comment" }
+];
+var CommentBox = (function (_super) {
+    __extends(CommentBox, _super);
+    function CommentBox() {
+        _super.apply(this, arguments);
     }
-};
-var CommentBox = React.createClass(spec);
+    CommentBox.prototype.getInitialState = function () {
+        return { data: [] };
+    };
+    CommentBox.prototype.componentDidMount = function () {
+        this.setState({ data: comments });
+    };
+    CommentBox.prototype.render = function () {
+        function handleCommentSubmit(comment) {
+            comments.push(comment);
+            this.setState({ data: comments });
+        }
+        return (React.createElement("div", {"className": "commentBox"}, React.createElement("h1", null, "Comments"), React.createElement(CommentList, {"data": this.state.data}), React.createElement(CommentForm, {"onCommentSubmit": handleCommentSubmit.bind(this)})));
+    };
+    return CommentBox;
+})(React.Component);
+;
 React.render(React.createElement(CommentBox, null), document.getElementById('content'));
