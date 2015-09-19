@@ -4,11 +4,6 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var MyCommentProperies = (function () {
-    function MyCommentProperies() {
-    }
-    return MyCommentProperies;
-})();
 var MyComment = (function (_super) {
     __extends(MyComment, _super);
     function MyComment() {
@@ -19,19 +14,14 @@ var MyComment = (function (_super) {
     };
     return MyComment;
 })(React.Component);
-var CommentListProperties = (function () {
-    function CommentListProperties() {
-    }
-    return CommentListProperties;
-})();
 var CommentList = (function (_super) {
     __extends(CommentList, _super);
     function CommentList() {
         _super.apply(this, arguments);
     }
     CommentList.prototype.render = function () {
-        var commentNodes = this.props.data.map(function (comment) {
-            return (React.createElement(MyComment, {"author": comment.author}, comment.text));
+        var commentNodes = this.props.data.map(function (comment, index) {
+            return (React.createElement(MyComment, {"author": comment.author, "key": 'comment_' + index}, comment.text));
         });
         return (React.createElement("div", {"className": "commentList"}, commentNodes));
     };
@@ -47,37 +37,30 @@ var CommentForm = (function (_super) {
             e.preventDefault();
             var author = React.findDOMNode(this.refs.author).value.trim();
             var text = React.findDOMNode(this.refs.text).value.trim();
-            console.log(author, text);
+            this.props.onCommentSubmit({ author: author, text: text });
         }
-        return (React.createElement("form", {"className": "commentForm", "onSubmit": handleSubmit.bind(this)}, React.createElement("input", {"type": "text", "placeholder": "Your name", "ref": "author"}), React.createElement("input", {"type": "text", "placeholder": "Say something...", "ref": "text"}), React.createElement("input", {"type": "submit", "value": "Post"})));
+        return (React.createElement("form", {"className": "commentForm", "onSubmit": handleSubmit.bind(this)}, React.createElement("p", null, React.createElement("input", {"type": "text", "placeholder": "Your name...", "ref": "author"})), React.createElement("p", null, React.createElement("input", {"type": "text", "placeholder": "Your comment...", "ref": "text"})), React.createElement("input", {"type": "submit", "value": "Post"})));
     };
     return CommentForm;
 })(React.Component);
-var CommentBoxState = (function () {
-    function CommentBoxState() {
-    }
-    return CommentBoxState;
-})();
-var comments = [
+var dbComments = [
     { author: "Pete Hunt", text: "This is one comment" },
-    { author: "Jordan Walke", text: "This is *another* comment" },
-    { author: "Mike McCain", text: "This is also *another* comment" }
+    { author: "Jordan Walke", text: "This is another comment" },
+    { author: "Mike McCain", text: "This is another another comment" }
 ];
 var CommentBox = (function (_super) {
     __extends(CommentBox, _super);
     function CommentBox() {
         _super.apply(this, arguments);
+        this.state = { data: [] };
     }
-    CommentBox.prototype.getInitialState = function () {
-        return { data: [] };
-    };
     CommentBox.prototype.componentDidMount = function () {
-        this.setState({ data: comments });
+        this.setState({ data: dbComments });
     };
     CommentBox.prototype.render = function () {
         function handleCommentSubmit(comment) {
-            comments.push(comment);
-            this.setState({ data: comments });
+            dbComments.push(comment);
+            this.setState({ data: dbComments });
         }
         return (React.createElement("div", {"className": "commentBox"}, React.createElement("h1", null, "Comments"), React.createElement(CommentList, {"data": this.state.data}), React.createElement(CommentForm, {"onCommentSubmit": handleCommentSubmit.bind(this)})));
     };
